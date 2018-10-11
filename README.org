@@ -1,0 +1,325 @@
+
+* DEBUGGING
+
+** code 
+
+ - best  scenario:
+
+  - reduce the code to a single pure function
+
+#+NAME: debuggingCode 
+#+BEGIN_SRC js
+/*
+  Add function signature
+ */
+function name(arg) {
+   return arg;      
+}
+#+END_SRC
+
+*** Problem Statement
+    
+    
+ | steps you took | what you expected | what actually happened |
+ |----------------+-------------------+------------------------|
+ |                |                   |                        |
+ |                |                   |                        |
+ |                |                   |                        |
+ |                |                   |                        |
+ |                |                   |                        |
+ |                |                   |                        |
+ |                |                   |                        |
+ |----------------+-------------------+------------------------|
+
+
+
+*** First Hipothesis
+
+| Hipothesis | evidence |
+|------------+----------|
+|            |          |
+|            |          |
+|            |          |
+|            |          |
+|            |          |
+|------------+----------|
+
+
+
+** Experiments
+
+ - Use one experiment per hipothesis
+
+ * Use multiple refinement per hipothesis 
+
+*** Experiment #1:
+
+ - only test one thing at a time
+
+ - try to keep the experiment environment clean
+   (no gulp, pluggins, ect)
+
+ - don't forget: tangle  `tapeTest` block and eval the `executeTest` block 
+
+| Hipothesis | WHAT          | HOW           | WHY           |
+|            | I am Testing? | I am testing? | I am testing? |
+|------------+---------------+---------------+---------------|
+|            |               |               |               |
+|            |               |               |               |
+|            |               |               |               |
+|            |               |               |               |
+|            |               |               |               |
+|            |               |               |               |
+|            |               |               |               |
+|------------+---------------+---------------+---------------|
+
+
+#+NAME: tapeTest
+#+BEGIN_SRC js  :noweb yes  :tangle ./function.spec.js 
+<<debuggingCode>>
+var test = require('./node_modules/tape');
+// test output type
+ test('func_name test', function (t) {
+ t.equal(typeof name(1),'number' ,'name(arg) should be a number' );
+ t.end(err); 
+});
+
+
+#+END_SRC
+
+
+#+NAME: executeTest 
+#+BEGIN_SRC sh  :results output 
+node  function.spec.js;
+echo ''
+#+END_SRC
+
+****  Observations
+
+
+| input/type | output/type | comments | (probable) cause |
+|------------+-------------+----------+------------------|
+|            |             |          |                  |
+|            |             |          |                  |
+|            |             |          |                  |
+|            |             |          |                  |
+|            |             |          |                  |
+|            |             |          |                  |
+|            |             |          |                  |
+|            |             |          |                  |
+|            |             |          |                  |
+|------------+-------------+----------+------------------|
+    
+
+
+
+*** Experiment #1: refinement #1
+
+ - change only one thing 
+
+ - try to keep the experiment environment clean
+   (no gulp, pluggins, ect)
+
+ - don't forget: tangle  `tapeTest` block and eval the `executeTest` block 
+
+| WHAT           | WHY               | HOW               | The change        |
+| I am changing? | I am changing it? | I am changing It? | has side effects? |
+|----------------+-------------------+-------------------+-------------------|
+|                |                   |                   |                   |
+|                |                   |                   |                   |
+|                |                   |                   |                   |
+|                |                   |                   |                   |
+|                |                   |                   |                   |
+|                |                   |                   |                   |
+|                |                   |                   |                   |
+|----------------+-------------------+-------------------+-------------------|
+
+#+NAME: newCode
+#+BEGIN_SRC js 
+function name(args) {
+// changes
+}
+#+END_SRC
+
+
+#+NAME: tapeTest
+#+BEGIN_SRC js  :noweb yes  :tangle ./function.spec.js 
+<<newCode>>
+var test = require('./node_modules/tape');
+// test output type
+ test('func_name test', function (t) {
+ t.equal(typeof name(1),'number' ,'func_name(arg) should be a number' );
+ // test change 
+ t.end(err); 
+});
+
+
+#+END_SRC
+
+
+#+NAME: executeTest 
+#+BEGIN_SRC sh  :results output 
+node  function.spec.js;
+echo ''
+#+END_SRC
+
+ 
+
+****  Observations
+
+
+| input/type | output/type | comments | (probable) cause |
+|------------+-------------+----------+------------------|
+|            |             |          |                  |
+|            |             |          |                  |
+|            |             |          |                  |
+|            |             |          |                  |
+|            |             |          |                  |
+|            |             |          |                  |
+|            |             |          |                  |
+|            |             |          |                  |
+|            |             |          |                  |
+|------------+-------------+----------+------------------|
+    
+
+
+** Fix
+
+ - Actual cause description:
+
+#+BEGIN_QUOTE
+
+#+END_QUOTE
+
+
+ * final code (fix)
+
+#+BEGIN_SRC js
+
+#+END_SRC
+
+ * Tests  
+
+#+BEGIN_SRC js 
+// Tests
+#+END_SRC
+
+
+
+
+
+
+
+
+
+
+* Reference:
+
+ - Github:
+
+https://github.com/stuarthalloway/presentations/wiki/Debugging-with-the-Scientific-Method
+
+ - Talk
+
+https://www.youtube.com/watch?v=FihU5JxmnBg
+
+
+
+#+BEGIN_SRC sh :results value verbatim  :exports results
+
+echo 'digraph finite_state_machine {
+        FAILURE     -> HIPOTHESIS   [ label = "why"   ]
+        HIPOTHESIS  -> EXPERIMENT   [ label = "suggests"]
+	EXPERIMENT  -> OBSERVATION  [ label = "produces"]
+        OBSERVATION -> HIPOTHESIS   [ label = "falsified?"]
+        OBSERVATION -> THEORY       [ label = "?"]
+        OBSERVATION -> HIPOTHESIS   [ label = "needs refinement"]
+        OBSERVATION -> FAILURE      [ label = "something is wrong"]
+}' | graph-easy
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+               +------------+  something is wrong
+               |  FAILURE   | <-----------------------+
+               +------------+                         |
+                 |                                    |
+                 | why                                |
+                 v                                    |
+               +------------+                         |
+  +----------> | HIPOTHESIS | <+                      |
+  |            +------------+  |                      |
+  |              |             |                      |
+  |              | suggests    |                      |
+  |              v             |                      |
+  |            +------------+  | needs refinement     |
+  | falsified? | EXPERIMENT |  |                      |
+  |            +------------+  |                      |
+  |              |             |                      |
+  |              | produces    |                      |
+  |              v             |                      |
+  |            +----------------------------------------+
+  +----------- |              OBSERVATION               |
+               +----------------------------------------+
+                 |
+                 | ?
+                 v
+               +------------+
+               |   THEORY   |
+               +------------+
+#+end_example
+
+
+** Definitions 
+   
+FAILURE:
+ - lack of success
+ - omission of expected action
+   
+HIPOTHESIS:
+ - a proposed explanation made on the basis of limited evidence as
+   a starting point for further investigation
+
+EXPERIMENT:
+ - test, trial of tentative procedure
+
+OBSERVATION:
+ - active acquisition of information from a primary source
+   
+
+falsified?:
+
+ - deductive process using modus tollens:
+   
+   
+needs refinement:
+
+ - The process of removing impurities or unwanted elements 
+ from a substance
+
+THEORY:
+
+ - A hypothesis offering valid predictions that can be
+   observed
+
+
+
+
+CAUSE: 
+ - an event preceding an effect without which the effect
+   would not have ocurred
+
+ACTUAL CAUSE:
+ - difference between the actual world and 
+   the closest posible world in which the 
+   effect does not occur
+
+
+FIX:
+ - an experiment that establishes an actual cause
+
+
+   
+
+
+
